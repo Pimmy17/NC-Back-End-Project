@@ -15,8 +15,9 @@ app.get("/api/articles", getArticles);
 //Error Handling Section
 
 //Bad Pathway
-app.all("/*", (req, res) => {
+app.all("/*", (req, res, next) => {
     res.status(404).send({ msg: "Incorrect Pathway =/"});
+    next(err);
 })
 
 
