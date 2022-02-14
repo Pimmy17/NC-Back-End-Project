@@ -1,6 +1,7 @@
 const express  = require("express");
 const { getTopics } = require("./controllers/topics.controllers");
 const { getUsers } = require("./controllers/users.controllers");
+const { getArticles } = require("./controllers/articles.controllers");
 
 
 const app = express();
@@ -8,6 +9,7 @@ app.use(express.json());
 
 app.get("/api/topics", getTopics);
 app.get("/api/users", getUsers);
+app.get("/api/articles", getArticles);
 
 
 //Error Handling Section
