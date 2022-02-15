@@ -3,6 +3,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
+const { expect } = require("@jest/globals");
 
 
 
@@ -13,7 +14,7 @@ beforeEach(() => seed(data));
 describe('Testing app', () => {
     test('should handle status 404 - bad pathway errors', () => {
         return request(app)
-        .get("/api/topix")
+        .get("/api/invalid-path")
         .expect(404)
         .then(({body: { msg } }) => {
             expect(msg).toBe("Incorrect Pathway =/");
@@ -81,5 +82,43 @@ describe('Testing app', () => {
                     expect(articles).toBeSortedBy("created_at", {descending: true,});
                 })
         });
+    });
+    describe('GET /api/articles/:article_id', () => {
+        test('status: 200, responds with a single article', () => {
+          return request(app)
+            .get(`/api/articles/1`)
+            .expect(200)
+            .then(({ body: { article } }) => {
+                article.forEach((oneArticle) => {
+                  expect(oneArticle).toEqual(
+                    expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    body: expect.any(String),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                     })
+                  );
+                });
+            });
+        });
+        test('status: 400, when an invalid article id is entered', () => {
+            return request(app)
+            .get(`/api/articles/barry`)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Wrong Input!")
+            })
+        });
+        test('status: 404, when a valid type for article id is entered, however it currently does not exist', () => {
+            return request(app)
+            .get(`/api/articles/999999`)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Woah! We're not that big yet!")
+            })
+        })
     });
 });
