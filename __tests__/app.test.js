@@ -154,4 +154,11 @@ describe('Testing app', () => {
             })
         })
     });
+    describe("DELETE", () => {
+        test("status: 204, deletes a selected comment_id", () => {
+          return request(app)
+          .delete(`/api/articles/1/2`)
+          .expect(204);
+        });
+      });
 });
