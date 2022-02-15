@@ -3,8 +3,6 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
-const { expect } = require("@jest/globals");
-
 
 
 afterAll(() => db.end());
@@ -89,8 +87,7 @@ describe('Testing app', () => {
             .get(`/api/articles/1`)
             .expect(200)
             .then(({ body: { article } }) => {
-                article.forEach((oneArticle) => {
-                  expect(oneArticle).toEqual(
+                  expect(article).toEqual(
                     expect.objectContaining({
                     author: expect.any(String),
                     title: expect.any(String),
@@ -101,7 +98,7 @@ describe('Testing app', () => {
                     votes: expect.any(Number)
                      })
                   );
-                });
+                
             });
         });
         test('status: 400, when an invalid article id is entered', () => {
@@ -117,7 +114,43 @@ describe('Testing app', () => {
             .get(`/api/articles/999999`)
             .expect(404)
             .then(({ body: { msg } }) => {
-                expect(msg).toBe("Woah! We're not that big yet!")
+                expect(msg).toBe("ID Does Not Exist!")
+            })
+        })
+    });
+    describe('GET /api/articles/:article_id/comments', () => {
+        test('status: 200, returns an array of objects containing comments for the relevant article id', () => {
+            return request(app)
+            .get(`/api/articles/1/comments`)
+            .expect(200)
+            .then(({ body: {comments} }) => {
+                expect(comments).toHaveLength(11);
+            })
+        });
+        test('status: 200, returns an array of objects containing comments for the relevant article id', () => {
+            return request(app)
+            .get(`/api/articles/1/comments`)
+            .expect(200)
+            .then(({ body: {comments} }) => {
+                comments.forEach((comment) => {
+                    expect(comment).toEqual(
+                      expect.objectContaining({
+                      comment_id: expect.any(Number),
+                      votes: expect.any(Number),
+                      created_at: expect.any(String),
+                      author: expect.any(String),
+                      body: expect.any(String),
+                      })
+                    );
+                });
+            })
+        });
+        test('status: 200, when an article id is entered, however there are no comments attached to that article', () => {
+            return request(app)
+            .get(`/api/articles/2/comments`)
+            .expect(200)
+            .then(({ body: {comments} }) => {
+                expect(comments).toHaveLength(0);
             })
         })
     });
