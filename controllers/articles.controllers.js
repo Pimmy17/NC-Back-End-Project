@@ -1,4 +1,4 @@
-const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists } = require("../models/articles.models.js");
+const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment } = require("../models/articles.models.js");
 
 
 exports.getArticles = (req, res, next) => {
@@ -35,14 +35,13 @@ exports.getComments = (req, res, next) => {
     })
 }
 
-// exports.getComments = (req, res, next) => {
-//     const {article_id} = req.params;
-//     fetchComments(article_id)
-//     .then((comments) => {
-//         res.status(200).send({comments})
-//     })
-//     .catch((err) => {
-//         next(err)
-//     })
-// }
+exports.deleteComment = (req, res, next) => {
+    removeComment(req.params)
+    .then((comments) => {
+        res.status(204).send({ comments, message: 'Deleted Successfully' });
+      })
+      .catch((err) => {
+        next(err)
+      })
+    };
 
