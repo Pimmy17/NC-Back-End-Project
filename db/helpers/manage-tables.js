@@ -29,7 +29,7 @@ const createTables = async () => {
   );`);
 
   await db.query(
-    `ALTER TABLE articles ADD comment_count INT DEFAULT 0 NOT NULL;`
+    `ALTER TABLE articles ADD comment_count TEXT DEFAULT 0 NOT NULL;`
   );
 
   await db.query(`
