@@ -16,6 +16,7 @@ const createTables = async () => {
 
   await Promise.all([topicsTablePromise, usersTablePromise]);
 
+
   await db.query(`
   CREATE TABLE articles (
     article_id SERIAL PRIMARY KEY,
@@ -26,6 +27,10 @@ const createTables = async () => {
     created_at TIMESTAMP DEFAULT NOW(),
     votes INT DEFAULT 0 NOT NULL
   );`);
+
+  await db.query(
+    `ALTER TABLE articles ADD comment_count INT DEFAULT 0 NOT NULL;`
+  );
 
   await db.query(`
   CREATE TABLE comments (

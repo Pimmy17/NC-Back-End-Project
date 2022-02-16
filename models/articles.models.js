@@ -1,12 +1,14 @@
 const db = require("../db/connection.js");
 
+
 exports.fetchArticles = () => {
     return db
-    .query(`SELECT article_id, author, created_at, title, topic, votes FROM articles ORDER BY created_at DESC;`)
+    .query(`SELECT article_id, author, created_at, title, topic, votes, comment_count FROM articles ORDER BY created_at DESC;`)
     .then(({ rows: articles }) => {
         return articles;
     })
 }
+
 
 exports.fetchArticleById = (article_id) => {
     return db
@@ -46,3 +48,6 @@ exports.removeComment = (removeCom) => {
         return rows[0];
       });
   };
+
+
+
