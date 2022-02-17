@@ -1,4 +1,4 @@
-const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment } = require("../models/articles.models.js");
+const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, } = require("../models/articles.models.js");
 
 
 exports.getArticles = (req, res, next) => {
@@ -26,7 +26,6 @@ exports.getComments = (req, res, next) => {
     const {article_id} = req.params;
     Promise.all([fetchComments(article_id), checkArticleExists(article_id)])
     .then((promises) => {
-        // console.log(comments)
         const comments = promises[0];
         res.status(200).send({comments})
     })
@@ -39,9 +38,10 @@ exports.deleteComment = (req, res, next) => {
     removeComment(req.params)
     .then((comments) => {
         res.status(204).send({ comments, message: 'Deleted Successfully' });
-      })
-      .catch((err) => {
+    })
+    .catch((err) => {
         next(err)
-      })
-    };
+    })
+};
+
 

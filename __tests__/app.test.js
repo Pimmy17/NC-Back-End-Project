@@ -80,6 +80,20 @@ describe('Testing app', () => {
                     expect(articles).toBeSortedBy("created_at", {descending: true,});
                 })
         });
+        test('updates the article object to include a comment count', () => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                articles.forEach((article) => {
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            comment_count: expect.any(String),
+                        })
+                    )
+                })
+            })
+        });
     });
     describe('GET /api/articles/:article_id', () => {
         test('status: 200, responds with a single article', () => {
@@ -98,8 +112,23 @@ describe('Testing app', () => {
                     votes: expect.any(Number)
                      })
                   );
-                
             });
+        });
+        test('status: 200, responds with the number of comments for each article', () => {
+            return request(app)
+            .get(`/api/articles/1`)
+            .expect(200)
+            .then(({ body: { article }}) => {
+                expect(article.comment_count).toEqual('11')
+            })
+        });
+        test('status: 200, responds with the number of comments as 0 where an article has no comments', () => {
+            return request(app)
+            .get(`/api/articles/2`)
+            .expect(200)
+            .then(({ body: { article }}) => {
+                expect(article.comment_count).toEqual('0')
+            })
         });
         test('status: 400, when an invalid article id is entered', () => {
             return request(app)
@@ -160,5 +189,5 @@ describe('Testing app', () => {
           .delete(`/api/articles/1/2`)
           .expect(204);
         });
-      });
+    });
 });
