@@ -239,5 +239,33 @@ describe('Testing app', () => {
               expect(msg).toBe('Incorrect Input!')
             })
         });
+        test('should return a status error of 400 if invalid article id is entered', () => {
+            const wrongArticleComment = {
+                article_id: 99999,
+                username: 'icellusedkars',
+                body: 'Bob Lob Law',
+              }
+            return request(app)
+            .post(`/api/articles/${wrongArticleComment.article_id}/comments`)
+            .send(wrongArticleComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Incorrect Input!')
+            })
+        });
+        test('should return a status error of 400 if invalid article id is entered', () => {
+            const wrongArticleComment = {
+                article_id: 'Not-an-ID',
+                username: 'icellusedkars',
+                body: 'Bob Lob Law',
+              }
+            return request(app)
+            .post(`/api/articles/${wrongArticleComment.article_id}/comments`)
+            .send(wrongArticleComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Wrong Input!')
+            })
+        });
     });
 });
