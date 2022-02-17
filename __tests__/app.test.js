@@ -94,6 +94,61 @@ describe('Testing app', () => {
                 })
             })
         });
+        test('allows the data to be sorted by any column, but the default is still date', () => {
+            const sortBy = 'author';
+            return request(app)
+            .get(`/api/articles?sort_by=${sortBy}`)
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                    expect(articles).toBeSortedBy(sortBy, { descending: true });
+                })
+        });
+        test('rejects an invalid sort by query', () => {
+            const sortBy = 'songs';
+            return request(app)
+            .get(`/api/articles?sort_by=${sortBy}`)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                    expect(msg).toBe('Invalid Sort Query');
+                })
+        });
+        test('the data can be sorted by ascending and descending with descending as the default order by method', () => {
+            const orderBy = 'asc';
+            return request(app)
+            .get(`/api/articles?order_by=${orderBy}`)
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles).toBeSortedBy('created_at', { ascending: true });
+            })
+        });
+        test('sorting the data when both a sort by and an order by query is passed in', () => {
+            const orderBy = 'ASC';
+            const sortBy = 'title';
+            return request(app)
+            .get(`/api/articles?sort_by=${sortBy}&order_by=${orderBy}`)
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles).toBeSortedBy(sortBy, { ascending: true });
+            })
+        });
+        test('rejects an invalid order by query', () => {
+            const orderBy = 'parallel';
+            return request(app)
+            .get(`/api/articles?order_by=${orderBy}`)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe('Invalid Order Query');
+            })
+        });
+        test('filters the articles by a valid topic', () => {
+            const validTopic = 'mitch';
+            return request(app)
+            .get(`/api/articles?topic=${validTopic}`)
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles).toEqual('')
+            })
+        });
     });
     describe('GET /api/articles/:article_id', () => {
         test('status: 200, responds with a single article', () => {

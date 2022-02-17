@@ -1,10 +1,16 @@
 const db = require("../db/connection.js");
 
 
-exports.fetchArticles = () => {
+exports.fetchArticles = (sort_by = "created_at", order_by = "DESC") => {
+    if (!['article_id', 'author', 'created_at', 'title', 'topic', 'votes', 'comment_count'].includes(sort_by)) {
+        return Promise.reject({ status: 400, msg: 'Invalid Sort Query' });
+      }
+      if (!['ASC', 'DESC', 'asc', 'desc'].includes(order_by)) {
+        return Promise.reject({ status: 400, msg: 'Invalid Order Query' });
+      }
     return db
     .query(`SELECT articles.article_id, articles.author, articles.created_at, articles.title, articles.topic, articles.votes, COUNT(comments.comment_id) AS comment_count
-     FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC;`)
+     FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by};`)
     .then(({ rows: articles }) => {
         return articles;
     })
