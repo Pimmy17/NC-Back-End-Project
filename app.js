@@ -1,7 +1,7 @@
 const express  = require("express");
 const { getTopics } = require("./controllers/topics.controllers");
 const { getUsers } = require("./controllers/users.controllers");
-const { getArticles, getArticleById, getComments, deleteComment } = require("./controllers/articles.controllers");
+const { getArticles, getArticleById, getComments, deleteComment, } = require("./controllers/articles.controllers");
 
 
 

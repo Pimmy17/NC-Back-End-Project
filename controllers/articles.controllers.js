@@ -1,4 +1,4 @@
-const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment } = require("../models/articles.models.js");
+const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, } = require("../models/articles.models.js");
 
 
 exports.getArticles = (req, res, next) => {

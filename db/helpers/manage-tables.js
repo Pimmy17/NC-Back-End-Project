@@ -28,9 +28,6 @@ const createTables = async () => {
     votes INT DEFAULT 0 NOT NULL
   );`);
 
-  await db.query(
-    `ALTER TABLE articles ADD comment_count TEXT DEFAULT 0 NOT NULL;`
-  );
 
   await db.query(`
   CREATE TABLE comments (

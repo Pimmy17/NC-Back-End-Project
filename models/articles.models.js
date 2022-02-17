@@ -3,16 +3,17 @@ const db = require("../db/connection.js");
 
 exports.fetchArticles = () => {
     return db
-    .query(`SELECT article_id, author, created_at, title, topic, votes, comment_count FROM articles ORDER BY created_at DESC;`)
+    .query(`SELECT articles.article_id, articles.author, articles.created_at, articles.title, articles.topic, articles.votes, COUNT(comments.comment_id) AS comment_count
+     FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC;`)
     .then(({ rows: articles }) => {
         return articles;
     })
 }
 
-
 exports.fetchArticleById = (article_id) => {
     return db
-    .query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
+    .query(`SELECT articles.article_id, articles.author, articles.created_at, articles.title, articles.topic, articles.votes, articles.body, COUNT(comments.comment_id) AS comment_count
+    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id ORDER BY created_at DESC;`, [article_id])
     .then(({ rows }) => {
         if(rows.length === 0){
             return Promise.reject({status: 404, msg: "ID Does Not Exist!"})

@@ -114,6 +114,22 @@ describe('Testing app', () => {
                   );
             });
         });
+        test('status: 200, responds with the number of comments for each article', () => {
+            return request(app)
+            .get(`/api/articles/1`)
+            .expect(200)
+            .then(({ body: { article }}) => {
+                expect(article.comment_count).toEqual('11')
+            })
+        });
+        test('status: 200, responds with the number of comments as 0 where an article has no comments', () => {
+            return request(app)
+            .get(`/api/articles/2`)
+            .expect(200)
+            .then(({ body: { article }}) => {
+                expect(article.comment_count).toEqual('0')
+            })
+        });
         test('status: 400, when an invalid article id is entered', () => {
             return request(app)
             .get(`/api/articles/barry`)
