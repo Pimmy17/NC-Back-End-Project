@@ -1,4 +1,4 @@
-const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, } = require("../models/articles.models.js");
+const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, postComment } = require("../models/articles.models.js");
 
 
 exports.getArticles = (req, res, next) => {
@@ -44,4 +44,12 @@ exports.deleteComment = (req, res, next) => {
     })
 };
 
-
+exports.addComment = (req, res, next) => {
+    postComment(req.body)
+    .then((comment) => {
+        res.status(201).send({ comment });
+    })
+    .catch((err) => {
+        next(err)
+    })
+}

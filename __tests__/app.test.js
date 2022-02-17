@@ -3,6 +3,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
+const { expect } = require("@jest/globals");
 
 
 afterAll(() => db.end());
@@ -188,6 +189,56 @@ describe('Testing app', () => {
           return request(app)
           .delete(`/api/articles/1/2`)
           .expect(204);
+        });
+    });
+    describe('POST', () => {
+        test('status:201, responds with a new comment added to an article', () => {
+          const testComment = {
+            article_id: 1,
+            username: 'butter_bridge',
+            body: `I can't read so the article was lost on me. Needs more pictures!`,
+          };
+          return request(app)
+            .post('/api/articles/1/comments')
+            .send(testComment)
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toEqual(
+                    expect.objectContaining({
+                        article_id: 1,
+                        author: 'butter_bridge',
+                        body: `I can't read so the article was lost on me. Needs more pictures!`,
+                    })
+                )
+            });
+        });
+        test('should return a status error of 400 if there is missing info in the body ', () => {
+            const badComment = {
+              article_id: 1,
+              username: 'icellusedkars',
+              body: '',
+            }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(badComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Missing Input!')
+            })
+        })
+        test('should return a status error of 400 if invalid info is entered', () => {
+            const anotherBadComment = {
+                article_id: 1,
+                username: 3,
+                body: 'Bob Lob Law',
+              }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(anotherBadComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Incorrect Input!')
+            })
         });
     });
 });

@@ -47,8 +47,22 @@ exports.removeComment = (removeCom) => {
       .query(`DELETE FROM comments WHERE comment_id = $1;`, [comment_id])
       .then(({ rows }) => {
         return rows[0];
+        });
+};
+
+
+exports.postComment = (newComment) => {
+    const {username, body, article_id} = newComment;
+    console.log(newComment)
+    if (username.length === 0 || body.length === 0){
+        return Promise.reject({status: 400, msg: 'Missing Input!'})
+      }
+    else {
+        return db
+            .query(`INSERT INTO comments (author, body, article_id) 
+            VALUES ($1, $2, $3) RETURNING *;`, [username, body, article_id])
+            .then(({ rows }) => {
+                return rows[0];
       });
-  };
-
-
-
+    }
+};
