@@ -3,7 +3,6 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
-const { expect } = require("@jest/globals");
 
 
 afterAll(() => db.end());
