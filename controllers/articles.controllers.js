@@ -1,58 +1,63 @@
 const { allowedNodeEnvironmentFlags } = require("process");
-const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, addVotes} = require("../models/articles.models.js");
-
+const {
+  fetchArticles,
+  fetchArticleById,
+  fetchComments,
+  checkArticleExists,
+  removeComment,
+  addVotes,
+} = require("../models/articles.models.js");
 
 exports.getArticles = (req, res, next) => {
-    fetchArticles()
+  fetchArticles()
     .then((articles) => {
-        res.status(200).send({articles})
+      res.status(200).send({ articles });
     })
     .catch((err) => {
-        next(err)
-    })
+      next(err);
+    });
 };
 
 exports.getArticleById = (req, res, next) => {
-    const {article_id} = req.params;
-    fetchArticleById(article_id)
+  const { article_id } = req.params;
+  fetchArticleById(article_id)
     .then((article) => {
-        res.status(200).send({article})
+      res.status(200).send({ article });
     })
     .catch((err) => {
-        next(err)
-    })
-}
-
-exports.getComments = (req, res, next) => {
-    const {article_id} = req.params;
-    Promise.all([fetchComments(article_id), checkArticleExists(article_id)])
-    .then((promises) => {
-        const comments = promises[0];
-        res.status(200).send({comments})
-    })
-    .catch((err) => {
-        next(err)
-    })
-}
-
-exports.deleteComment = (req, res, next) => {
-    removeComment(req.params)
-    .then((comments) => {
-        res.status(204).send({ comments, message: 'Deleted Successfully' });
-    })
-    .catch((err) => {
-        next(err)
-    })
+      next(err);
+    });
 };
 
-
-exports.updateVotes = (req, res, next) => {
-    const {article_id} = req.params;
-    addVotes(article_id)
-    .then((articles) => {
-        res.status(200).send({ articles });
+exports.getComments = (req, res, next) => {
+  const { article_id } = req.params;
+  Promise.all([fetchComments(article_id), checkArticleExists(article_id)])
+    .then((promises) => {
+      const comments = promises[0];
+      res.status(200).send({ comments });
     })
     .catch((err) => {
-        next(err)
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  removeComment(req.params)
+    .then((comments) => {
+      res.status(204).send({ comments, message: "Deleted Successfully" });
     })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.updateVotes = (req, res, next) => {
+  const { article_id, votes } = req.params;
+  addVotes(article_id, votes)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
