@@ -94,8 +94,17 @@ describe('Testing app', () => {
                 })
             })
         });
-        test('allows the data to be sorted by any column, but the default is still date', () => {
+        test('allows the data to be sorted by any author, but the default is still date', () => {
             const sortBy = 'author';
+            return request(app)
+            .get(`/api/articles?sort_by=${sortBy}`)
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                    expect(articles).toBeSortedBy(sortBy, { descending: true });
+                })
+        });
+        test('allows the data to be sorted by title, but the default is still date', () => {
+            const sortBy = 'title';
             return request(app)
             .get(`/api/articles?sort_by=${sortBy}`)
             .expect(200)

@@ -33,7 +33,7 @@ app.use((err, req, res, next) => {
     else next(err)
   })
   
-  app.use((err, rew, res, next) => {
+  app.use((err, req, res, next) => {
     if(err.code === '23503'){
       res.status(400).send({msg: 'Incorrect Input!'})
     }
