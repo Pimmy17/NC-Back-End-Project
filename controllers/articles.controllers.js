@@ -2,7 +2,8 @@ const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, remo
 
 
 exports.getArticles = (req, res, next) => {
-    fetchArticles()
+    const {sort_by, order_by, topic} = req.query;
+    fetchArticles(sort_by, order_by, topic)
     .then((articles) => {
         res.status(200).send({articles})
     })
