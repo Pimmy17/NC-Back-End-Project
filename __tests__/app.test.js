@@ -146,7 +146,39 @@ describe('Testing app', () => {
             .get(`/api/articles?topic=${validTopic}`)
             .expect(200)
             .then(({ body: { articles } }) => {
-                expect(articles).toEqual('')
+                expect(articles).toHaveLength(11)
+                articles.forEach((article) => {
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            topic: validTopic,
+                        })
+                    )
+                })
+            })
+        });
+        test('filters the articles by a valid topic, if a valid topic is not connected to an article then returns 0', () => {
+            const validTopic = 'paper';
+            return request(app)
+            .get(`/api/articles?topic=${validTopic}`)
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles).toHaveLength(0)
+                articles.forEach((article) => {
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            topic: validTopic,
+                        })
+                    )
+                })
+            })
+        });
+        test('returns an error if an invalid topic is given', () => {
+            const invalidTopic = 'dogs';
+            return request(app)
+            .get(`/api/articles?topic=${invalidTopic}`)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe('Invalid Topic');
             })
         });
     });
