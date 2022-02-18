@@ -17,34 +17,43 @@ exports.fetchArticles = (sort_by = "created_at", order_by = "DESC", topic) => {
   if (!["ASC", "DESC", "asc", "desc"].includes(order_by)) {
     return Promise.reject({ status: 400, msg: "Invalid Order Query" });
   }
-  return db
-    .query(`SELECT DISTINCT slug FROM topics;`)
-    .then(({ rows: approvedTopics }) => {
-      const validTopics = approvedTopics.map(
-        (approvedTopic) => approvedTopic.slug
-      );
-      return validTopics;
-    })
-    .then((validTopics) => {
-      if (![...validTopics, undefined].includes(topic)) {
-        return Promise.reject({ status: 400, msg: "Invalid Topic" });
-      }
-    })
-    .then(() => {
-      let queryStr = `SELECT articles.article_id, articles.author, articles.created_at, articles.title, articles.topic, articles.votes, COUNT(comments.comment_id) AS comment_count
+  //   return (
+  //     db
+  //       .query(`SELECT DISTINCT slug FROM topics;`)
+  //       .then(({ rows: approvedTopics }) => {
+  //         const validTopics = approvedTopics.map(
+  //           (approvedTopic) => approvedTopic.slug
+  //         );
+  //         return validTopics;
+  //       })
+  //       .then((validTopics) => {
+  //         if (![...validTopics, undefined].includes(topic)) {
+  //           return Promise.reject({ status: 400, msg: "Invalid Topic" });
+  //         }
+  //       })
+
+  let queryStr = `SELECT articles.article_id, articles.author, articles.created_at, articles.title, articles.topic, articles.votes, COUNT(comments.comment_id) AS comment_count
         FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
-      const queryValues = [];
-      if (topic) {
-        queryValues.push(topic);
-        queryStr += ` WHERE topic = $1`;
-      }
-      queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by};`;
+  const queryValues = [];
+  if (topic) {
+    queryValues.push(topic);
+    queryStr += ` WHERE topic ILIKE $1`;
+  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by};`;
+  console.log(order_by);
+  return db.query(queryStr, queryValues).then(({ rows: articles }) => {
+    return articles;
+  });
+};
 
-      return db.query(queryStr, queryValues);
-    })
-    .then(({ rows: articles }) => {
-      return articles;
+exports.checkingForValidTopic = (topic) => {
+  return db
+    .query(`SELECT slug = $1 FROM topics;`, [topic])
+    .then(({ rows: validTopics }) => {
+      if (validTopics.length === 0) {
+        return Promise.reject({ status: 400, msg: "Invalid Topic" });
+      }
     });
 };
 
