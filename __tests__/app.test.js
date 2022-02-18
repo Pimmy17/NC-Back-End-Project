@@ -190,4 +190,78 @@ describe('Testing app', () => {
           .expect(204);
         });
     });
+    describe('POST', () => {
+        test('status:201, responds with a new comment added to an article', () => {
+          const testComment = {
+            username: 'butter_bridge',
+            body: `I can't read so the article was lost on me. Needs more pictures!`,
+          };
+          return request(app)
+            .post('/api/articles/1/comments')
+            .send(testComment)
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toEqual(
+                    expect.objectContaining({
+                        author: 'butter_bridge',
+                        body: `I can't read so the article was lost on me. Needs more pictures!`,
+                    })
+                )
+            });
+        });
+        test('should return a status error of 400 if there is missing info in the body ', () => {
+            const badComment = {
+              username: 'icellusedkars',
+              body: '',
+            }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(badComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Missing Input!')
+            })
+        })
+        test('should return a status error of 400 if invalid info is entered', () => {
+            const anotherBadComment = {
+                username: 3,
+                body: 'Bob Lob Law',
+              }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(anotherBadComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Incorrect Input!')
+            })
+        });
+        test('should return a status error of 400 if invalid article id is entered', () => {
+            const wrongArticleComment = {
+                article_id: 99999,
+                username: 'icellusedkars',
+                body: 'Bob Lob Law',
+              }
+            return request(app)
+            .post(`/api/articles/${wrongArticleComment.article_id}/comments`)
+            .send(wrongArticleComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Incorrect Input!')
+            })
+        });
+        test('should return a status error of 400 if invalid article id is entered', () => {
+            const wrongArticleComment = {
+                article_id: 'Not-an-ID',
+                username: 'icellusedkars',
+                body: 'Bob Lob Law',
+              }
+            return request(app)
+            .post(`/api/articles/${wrongArticleComment.article_id}/comments`)
+            .send(wrongArticleComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Wrong Input!')
+            })
+        });
+    });
 });

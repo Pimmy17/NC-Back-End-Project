@@ -1,7 +1,7 @@
 const express  = require("express");
 const { getTopics } = require("./controllers/topics.controllers");
 const { getUsers } = require("./controllers/users.controllers");
-const { getArticles, getArticleById, getComments, deleteComment, } = require("./controllers/articles.controllers");
+const { getArticles, getArticleById, getComments, deleteComment, addComment} = require("./controllers/articles.controllers");
 
 
 
@@ -16,7 +16,7 @@ app.get("/api/articles/:article_id/comments", getComments);
 
 
 app.delete("/api/articles/:article_id/:comment_id", deleteComment);
-
+app.post("/api/articles/:article_id/comments", addComment);
 
 //Error Handling Section
 
@@ -33,7 +33,7 @@ app.use((err, req, res, next) => {
     else next(err)
   })
   
-  app.use((err, rew, res, next) => {
+  app.use((err, req, res, next) => {
     if(err.code === '23503'){
       res.status(400).send({msg: 'Incorrect Input!'})
     }
