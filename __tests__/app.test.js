@@ -190,4 +190,19 @@ describe('Testing app', () => {
           .expect(204);
         });
     });
+    describe('PATCH', () => {
+        test('status: 200 updates the vote count by 1 when a new vote is added', () => {
+            newVote = 1;
+            return request(app)
+            .patch(`/api/articles/1`)
+            .send(newVote)
+            .expect(200)
+            .then(({ body: article }) => {
+                console.log(article)
+                expect(article).toEqual({
+                    votes: currentVotes + newVote,
+                })
+            })
+        });
+    });
 });

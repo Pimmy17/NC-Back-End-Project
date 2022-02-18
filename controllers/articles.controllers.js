@@ -1,4 +1,5 @@
-const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, } = require("../models/articles.models.js");
+const { allowedNodeEnvironmentFlags } = require("process");
+const { fetchArticles, fetchArticleById, fetchComments, checkArticleExists, removeComment, addVotes} = require("../models/articles.models.js");
 
 
 exports.getArticles = (req, res, next) => {
@@ -45,3 +46,13 @@ exports.deleteComment = (req, res, next) => {
 };
 
 
+exports.updateVotes = (req, res, next) => {
+    const {article_id} = req.params;
+    addVotes(article_id)
+    .then((articles) => {
+        res.status(200).send({ articles });
+    })
+    .catch((err) => {
+        next(err)
+    })
+};

@@ -51,4 +51,7 @@ exports.removeComment = (removeCom) => {
   };
 
 
-
+exports.addVotes = (article_id) => {
+    return db
+    
+}
