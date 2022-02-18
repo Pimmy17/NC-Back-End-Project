@@ -45,7 +45,8 @@ exports.deleteComment = (req, res, next) => {
 };
 
 exports.addComment = (req, res, next) => {
-    postComment(req.body)
+    const {article_id} = req.params;
+    postComment(req.body, article_id)
     .then((comment) => {
         res.status(201).send({ comment });
     })

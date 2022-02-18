@@ -51,8 +51,8 @@ exports.removeComment = (removeCom) => {
 };
 
 
-exports.postComment = (newComment) => {
-    const {username, body, article_id} = newComment;
+exports.postComment = (newComment, article_id) => {
+    const {username, body} = newComment;
     if (username.length === 0 || body.length === 0){
         return Promise.reject({status: 400, msg: 'Missing Input!'})
       }

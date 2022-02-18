@@ -193,7 +193,6 @@ describe('Testing app', () => {
     describe('POST', () => {
         test('status:201, responds with a new comment added to an article', () => {
           const testComment = {
-            article_id: 1,
             username: 'butter_bridge',
             body: `I can't read so the article was lost on me. Needs more pictures!`,
           };
@@ -204,7 +203,6 @@ describe('Testing app', () => {
             .then(({ body }) => {
                 expect(body.comment).toEqual(
                     expect.objectContaining({
-                        article_id: 1,
                         author: 'butter_bridge',
                         body: `I can't read so the article was lost on me. Needs more pictures!`,
                     })
@@ -213,7 +211,6 @@ describe('Testing app', () => {
         });
         test('should return a status error of 400 if there is missing info in the body ', () => {
             const badComment = {
-              article_id: 1,
               username: 'icellusedkars',
               body: '',
             }
@@ -227,7 +224,6 @@ describe('Testing app', () => {
         })
         test('should return a status error of 400 if invalid info is entered', () => {
             const anotherBadComment = {
-                article_id: 1,
                 username: 3,
                 body: 'Bob Lob Law',
               }
