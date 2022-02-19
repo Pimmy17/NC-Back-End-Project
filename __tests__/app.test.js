@@ -188,15 +188,53 @@ describe("Testing app", () => {
   });
   describe("PATCH", () => {
     test("status: 200 updates the vote count by 1 when a new vote is added", () => {
-      newVote = 1;
+      newVote = { inc_votes: 1 };
       return request(app)
         .patch(`/api/articles/1`)
         .send(newVote)
         .expect(200)
-        .then(({ body: articles }) => {
-          expect(articles).toEqual({
-            votes: 101,
-          });
+        .then(({ body: { articles } }) => {
+          expect(articles.votes).toEqual(101);
+        });
+    });
+    test("status: 200 updates the vote count by 50 when 50 new votes is added", () => {
+      newVote = { inc_votes: 50 };
+      return request(app)
+        .patch(`/api/articles/3`)
+        .send(newVote)
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.votes).toEqual(50);
+        });
+    });
+    test("status: 200 updates the vote count by minus 20 when -20 new votes is added", () => {
+      newVote = { inc_votes: -20 };
+      return request(app)
+        .patch(`/api/articles/2`)
+        .send(newVote)
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.votes).toEqual(-20);
+        });
+    });
+    test("status: 404 rejects the updating of votes if the article does not exist", () => {
+      newVote = { inc_votes: 2 };
+      return request(app)
+        .patch(`/api/articles/99999`)
+        .send(newVote)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Article Does Not Exist!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if the vote is not a number", () => {
+      newVote = { inc_votes: "Barry" };
+      return request(app)
+        .patch(`/api/articles/1`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Wrong Input!");
         });
     });
   });
