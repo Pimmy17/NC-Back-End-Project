@@ -54,7 +54,7 @@ exports.deleteComment = (req, res, next) => {
 
 exports.updateVotes = (req, res, next) => {
   const { article_id } = req.params;
-  const newVote = req.body.inc_votes;
+  const newVote = req.body;
   addVotes(article_id, newVote)
     .then((articles) => {
       res.status(200).send({ articles });

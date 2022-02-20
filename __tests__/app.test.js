@@ -407,5 +407,45 @@ describe("POST", () => {
           expect(msg).toBe("Wrong Input!");
         });
     });
+    test("status: 400 rejects the updating of votes if an invalid ID is entered", () => {
+      newVote = { inc_votes: 2 };
+      return request(app)
+        .patch(`/api/articles/notvalidID`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Wrong Input!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if the key is spelt wrong", () => {
+      newVote = { inc_vots: 2 };
+      return request(app)
+        .patch(`/api/articles/2`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Key!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if there are extra keys", () => {
+      newVote = { inc_votes: 5, title: "The Mitch is Back" };
+      return request(app)
+        .patch(`/api/articles/2`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Wrong Input!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if inc_votes is not passed in", () => {
+      newVote = { title: "The Mitch is Back" };
+      return request(app)
+        .patch(`/api/articles/2`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Key!");
+        });
+    });
   });
 });
