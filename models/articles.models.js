@@ -84,6 +84,29 @@ exports.removeComment = (removeCom) => {
     });
 };
 
+exports.addVotes = (article_id, newVote) => {
+  const voteKeys = Object.keys(newVote);
+  if (!(voteKeys.length === 1)) {
+    return Promise.reject({ status: 400, msg: "Wrong Input!" });
+  } else if (!(voteKeys[0] === "inc_votes")) {
+    return Promise.reject({ status: 400, msg: "Incorrect Key!" });
+  }
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`,
+      [newVote.inc_votes, article_id]
+    )
+    .then(({ rows: articles }) => {
+      if (articles.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article Does Not Exist!",
+        });
+      }
+      return articles[0];
+    });
+};
+
 exports.postComment = (newComment, article_id) => {
   const { username, body } = newComment;
   if (username.length === 0 || body.length === 0) {
