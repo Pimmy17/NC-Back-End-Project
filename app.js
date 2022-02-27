@@ -1,6 +1,9 @@
 const express = require("express");
 const { getTopics } = require("./controllers/topics.controllers");
-const { getUsers } = require("./controllers/users.controllers");
+const {
+  getUsers,
+  getUserByUsername,
+} = require("./controllers/users.controllers");
 const {
   getArticles,
   getArticleById,
@@ -8,20 +11,26 @@ const {
   deleteComment,
   updateVotes,
   addComment,
+  deleteArticle,
+  updateCommentVotes,
 } = require("./controllers/articles.controllers");
 
 const app = express();
 app.use(express.json());
-
+//Gets
 app.get("/api/topics", getTopics);
 app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getComments);
-
+app.get("/api/users/:username", getUserByUsername);
+//Deletes
 app.delete("/api/articles/:article_id/:comment_id", deleteComment);
+app.delete("/api/articles/:article_id", deleteArticle);
+//Patches
 app.patch("/api/articles/:article_id", updateVotes);
-
+app.patch("/api/articles/:article_id/:comment_id", updateCommentVotes);
+//Posts
 app.post("/api/articles/:article_id/comments", addComment);
 
 //Error Handling Section

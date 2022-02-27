@@ -6,6 +6,8 @@ const {
   removeComment,
   addVotes,
   postComment,
+  removeArticle,
+  addCommentVotes,
 } = require("../models/articles.models.js");
 
 exports.getArticles = (req, res, next) => {
@@ -68,6 +70,28 @@ exports.addComment = (req, res, next) => {
   postComment(req.body, article_id)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteArticle = (req, res, next) => {
+  removeArticle(req.params)
+    .then((articles) => {
+      res.status(204).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.updateCommentVotes = (req, res, next) => {
+  const { comment_id } = req.params;
+  const newVote = req.body;
+  addCommentVotes(comment_id, newVote)
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);

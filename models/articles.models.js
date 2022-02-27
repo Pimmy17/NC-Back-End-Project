@@ -123,3 +123,36 @@ exports.postComment = (newComment, article_id) => {
       });
   }
 };
+
+exports.removeArticle = (removeArt) => {
+  const { article_id } = removeArt;
+  return db
+    .query(`DELETE FROM comments WHERE article_id = $1;`, [article_id])
+    .then(`DELETE FROM articles WHERE article_id = $1;`, [article_id])
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.addCommentVotes = (comment_id, newVote) => {
+  const voteKeys = Object.keys(newVote);
+  if (!(voteKeys.length === 1)) {
+    return Promise.reject({ status: 400, msg: "Wrong Input!" });
+  } else if (!(voteKeys[0] === "inc_votes")) {
+    return Promise.reject({ status: 400, msg: "Incorrect Key!" });
+  }
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`,
+      [newVote.inc_votes, comment_id]
+    )
+    .then(({ rows: comment }) => {
+      if (comment.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Comment Does Not Exist!",
+        });
+      }
+      return comment[0];
+    });
+};
