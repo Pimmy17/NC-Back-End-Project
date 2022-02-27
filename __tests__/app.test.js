@@ -3,6 +3,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
+const { expect } = require("@jest/globals");
 
 afterAll(() => db.end());
 beforeEach(() => seed(data));
@@ -445,6 +446,151 @@ describe("POST", () => {
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Incorrect Key!");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("status: 204, deletes a selected article by it's ID", () => {
+      return request(app).delete(`/api/articles/1`).expect(204);
+    });
+  });
+  describe("PATCH", () => {
+    test("status: 200 updates the vote count by 1 when a new vote is added", () => {
+      newVote = { inc_votes: 1 };
+      return request(app)
+        .patch(`/api/articles/1/2`)
+        .send(newVote)
+        .expect(200)
+        .then(({ body: { comment } }) => {
+          expect(comment.votes).toEqual(15);
+        });
+    });
+    test("status: 200 updates the vote count by 50 when 50 new votes is added", () => {
+      newVote = { inc_votes: 50 };
+      return request(app)
+        .patch(`/api/articles/1/2`)
+        .send(newVote)
+        .expect(200)
+        .then(({ body: { comment } }) => {
+          expect(comment.votes).toEqual(64);
+        });
+    });
+    test("status: 200 updates the vote count by minus 20 when -20 new votes is added", () => {
+      newVote = { inc_votes: -20 };
+      return request(app)
+        .patch(`/api/articles/9/1`)
+        .send(newVote)
+        .expect(200)
+        .then(({ body: { comment } }) => {
+          expect(comment.votes).toEqual(-4);
+        });
+    });
+    test("status: 404 rejects the updating of votes if the comment does not exist", () => {
+      newVote = { inc_votes: 2 };
+      return request(app)
+        .patch(`/api/articles/1/99999`)
+        .send(newVote)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Comment Does Not Exist!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if the vote is not a number", () => {
+      newVote = { inc_votes: "Barry" };
+      return request(app)
+        .patch(`/api/articles/1/4`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Wrong Input!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if an invalid ID is entered", () => {
+      newVote = { inc_votes: 2 };
+      return request(app)
+        .patch(`/api/articles/1/notvalidID`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Wrong Input!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if the key is spelt wrong", () => {
+      newVote = { inc_vots: 2 };
+      return request(app)
+        .patch(`/api/articles/1/5`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Key!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if there are extra keys", () => {
+      newVote = { inc_votes: 5, author: "Paul & Barry Chuckle" };
+      return request(app)
+        .patch(`/api/articles/1/2`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Wrong Input!");
+        });
+    });
+    test("status: 400 rejects the updating of votes if inc_votes is not passed in", () => {
+      newVote = { author: "Bob Lob Law" };
+      return request(app)
+        .patch(`/api/articles/1/2`)
+        .send(newVote)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Key!");
+        });
+    });
+  });
+  describe("GET /api/users/username", () => {
+    test("should return a status of 200 and an array containing the user's username, name and avatar url", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          console.log(Object.keys(user).length);
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+    });
+    test("should return a status of 200 and checks the number of keys in the user is 3", () => {
+      return request(app)
+        .get("/api/users/rogersop")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          expect(Object.keys(user)).toHaveLength(3);
+        });
+    });
+    test("should return a status of 200 and an array containing the user's username, name and avatar url - hardcoded test for username butter_bridge", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: "butter_bridge",
+              name: "jonny",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            })
+          );
+        });
+    });
+    test("should return status 404 if an incorrect username is entered", () => {
+      return request(app)
+        .get("/api/users/butters")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid Username!");
         });
     });
   });
