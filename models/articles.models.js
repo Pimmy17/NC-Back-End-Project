@@ -156,3 +156,23 @@ exports.addCommentVotes = (comment_id, newVote) => {
       return comment[0];
     });
 };
+
+exports.postArticle = (article) => {
+  const { author, title, body, topic } = article;
+  if (
+    author.length === 0 ||
+    title.length === 0 ||
+    body.length === 0 ||
+    topic.length === 0
+  ) {
+    return Promise.reject({ status: 400, msg: "Missing Input!" });
+  }
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *;`,
+      [author, title, body, topic]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

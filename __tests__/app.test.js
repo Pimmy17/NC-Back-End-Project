@@ -3,12 +3,11 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
-const { expect } = require("@jest/globals");
 
 afterAll(() => db.end());
 beforeEach(() => seed(data));
 
-describe("Testing app", () => {
+describe("Testing App", () => {
   test("should handle status 404 - bad pathway errors", () => {
     return request(app)
       .get("/api/invalid-path")
@@ -18,7 +17,7 @@ describe("Testing app", () => {
       });
   });
 
-  describe("GET /api/topics", () => {
+  describe("GET - Topics", () => {
     test("should return a status of 200 and an array of objects with slug and description", () => {
       return request(app)
         .get("/api/topics")
@@ -35,7 +34,7 @@ describe("Testing app", () => {
         });
     });
   });
-  describe("GET /api/users", () => {
+  describe("GET - Users", () => {
     test("should return a status of 200 and an array of objects containing all users", () => {
       return request(app)
         .get("/api/users")
@@ -51,7 +50,7 @@ describe("Testing app", () => {
         });
     });
   });
-  describe("GET /api/articles", () => {
+  describe("GET - Articles", () => {
     test("should return a status of 200 and an array of objects containing all articles", () => {
       return request(app)
         .get("/api/articles")
@@ -190,7 +189,7 @@ describe("Testing app", () => {
         });
     });
   });
-  describe("GET /api/articles/:article_id", () => {
+  describe("GET - Article By Id", () => {
     test("status: 200, responds with a single article", () => {
       return request(app)
         .get(`/api/articles/1`)
@@ -242,7 +241,7 @@ describe("Testing app", () => {
         });
     });
   });
-  describe("GET /api/articles/:article_id/comments", () => {
+  describe("GET - Comments", () => {
     test("status: 200, returns an array of objects containing comments for the relevant article id", () => {
       return request(app)
         .get(`/api/articles/1/comments`)
@@ -278,13 +277,13 @@ describe("Testing app", () => {
         });
     });
   });
-  describe("DELETE", () => {
+  describe("DELETE - Comments", () => {
     test("status: 204, deletes a selected comment_id", () => {
       return request(app).delete(`/api/articles/1/2`).expect(204);
     });
   });
 });
-describe("POST", () => {
+describe("POST - Comments", () => {
   test("status:201, responds with a new comment added to an article", () => {
     const testComment = {
       username: "butter_bridge",
@@ -357,7 +356,7 @@ describe("POST", () => {
         expect(msg).toBe("Wrong Input!");
       });
   });
-  describe("PATCH", () => {
+  describe("PATCH - Article Votes", () => {
     test("status: 200 updates the vote count by 1 when a new vote is added", () => {
       newVote = { inc_votes: 1 };
       return request(app)
@@ -449,12 +448,12 @@ describe("POST", () => {
         });
     });
   });
-  describe("DELETE", () => {
+  describe("DELETE - Article", () => {
     test("status: 204, deletes a selected article by it's ID", () => {
       return request(app).delete(`/api/articles/1`).expect(204);
     });
   });
-  describe("PATCH", () => {
+  describe("PATCH - Comment Vote", () => {
     test("status: 200 updates the vote count by 1 when a new vote is added", () => {
       newVote = { inc_votes: 1 };
       return request(app)
@@ -546,13 +545,14 @@ describe("POST", () => {
         });
     });
   });
-  describe("GET /api/users/username", () => {
+  describe("GET - Username", () => {
     test("should return a status of 200 and an array containing the user's username, name and avatar url", () => {
       return request(app)
         .get("/api/users/butter_bridge")
         .expect(200)
         .then(({ body: { user } }) => {
-          console.log(Object.keys(user).length);
+          const inputLength = Object.keys(user).length;
+          expect(inputLength).toEqual(3);
           expect(user).toEqual(
             expect.objectContaining({
               username: expect.any(String),
@@ -591,6 +591,111 @@ describe("POST", () => {
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Invalid Username!");
+        });
+    });
+  });
+  describe("POST - Topics", () => {
+    test("status:201, responds with a new topic added to topics", () => {
+      const testTopic = {
+        slug: "comics",
+        description:
+          "Superheroes fighting Supervillians. And there is only one winner...Chuck Norris!",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic).toEqual(
+            expect.objectContaining({
+              slug: "comics",
+              description:
+                "Superheroes fighting Supervillians. And there is only one winner...Chuck Norris!",
+            })
+          );
+        });
+    });
+    test("should return a status error of 400 if there is missing info in the body ", () => {
+      const badTopic = {
+        slug: "comics",
+        description: "",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(badTopic)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing Input!");
+        });
+    });
+  });
+  describe("POST - Article", () => {
+    test("status:201, responds with a new article added to articles", () => {
+      const testArticle = {
+        author: "rogersop",
+        title: "The Life and Times of the Yeti",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: "paper",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.article).toEqual(
+            expect.objectContaining({
+              author: "rogersop",
+              title: "The Life and Times of the Yeti",
+              body: "A cautionary tale of a Yeti and yellow snowcones",
+              topic: "paper",
+              votes: 0,
+            })
+          );
+        });
+    });
+    test("should return a status error of 400 if there is missing info in the body ", () => {
+      const badArticle = {
+        author: "rogersop",
+        title: "",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: "paper",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(badArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing Input!");
+        });
+    });
+    test("should return a status error of 400 if there is missing info in the body ", () => {
+      const badArticle = {
+        author: "rogersop",
+        title: "The Life and Times of the Yeti",
+        body: "",
+        topic: "paper",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(badArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing Input!");
+        });
+    });
+    test("should return a status error of 400 if invalid info is entered", () => {
+      const anotherBadArticle = {
+        author: 5,
+        title: "The Life and Times of the Yeti",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: "paper",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(anotherBadArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Input!");
         });
     });
   });

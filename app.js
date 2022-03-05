@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics } = require("./controllers/topics.controllers");
+const { getTopics, addTopic } = require("./controllers/topics.controllers");
 const {
   getUsers,
   getUserByUsername,
@@ -13,6 +13,7 @@ const {
   addComment,
   deleteArticle,
   updateCommentVotes,
+  addArticle,
 } = require("./controllers/articles.controllers");
 
 const app = express();
@@ -32,6 +33,8 @@ app.patch("/api/articles/:article_id", updateVotes);
 app.patch("/api/articles/:article_id/:comment_id", updateCommentVotes);
 //Posts
 app.post("/api/articles/:article_id/comments", addComment);
+app.post("/api/topics", addTopic);
+app.post("/api/articles", addArticle);
 
 //Error Handling Section
 

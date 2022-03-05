@@ -8,6 +8,7 @@ const {
   postComment,
   removeArticle,
   addCommentVotes,
+  postArticle,
 } = require("../models/articles.models.js");
 
 exports.getArticles = (req, res, next) => {
@@ -92,6 +93,16 @@ exports.updateCommentVotes = (req, res, next) => {
   addCommentVotes(comment_id, newVote)
     .then((comment) => {
       res.status(200).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.addArticle = (req, res, next) => {
+  postArticle(req.body)
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch((err) => {
       next(err);
