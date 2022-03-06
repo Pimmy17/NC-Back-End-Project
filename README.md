@@ -6,7 +6,7 @@ This project is bringing together everything I have learned over the past 2 week
 
 It is a RESTful API that has been built with various end-points, including articles, comments, topics and users.
 
-Hosted Version can be found [here](url TBCS)
+Hosted Version can be found [here](https://apimlott-nc-news.herokuapp.com/api)
 
 ---
 
@@ -35,21 +35,15 @@ $ code .
 
 2. **Install Dependencies:**
 
-After cloning, you will need to install the following dependencies in your terminal to allow tests to be run.
+After cloning, you will need to install the dependencies in your terminal to allow tests to be run.
 
 ```
-- $ npm i jest -D
-- $ npm i express
-- $ npm i pg
-- $ npm i -D supertest
-- $ npm i dotenv
-- $ npm i nodemon
-- $ npm i -D pg-format
+- $ npm i -D
 And an addition extension:
 - $ npm install --save-dev jest-sorted
 ```
 
-After installing these dependencies, head over to the **package.json** file to make sure **Script:** --> **test:** is set to "jest app".
+After installing the dependencies, head over to the **package.json** file to make sure **Script:** --> **test:** is set to "jest app".
 
 3. **Seed Local Database:**
 
