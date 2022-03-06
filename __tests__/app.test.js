@@ -3,10 +3,9 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
-const { expect } = require("@jest/globals");
 
-afterAll(() => db.end());
 beforeEach(() => seed(data));
+afterAll(() => db.end());
 
 describe("Testing App", () => {
   test("should handle status 404 - bad pathway errors", () => {
@@ -726,7 +725,7 @@ describe("POST - Comments", () => {
         .send(newArticle)
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Incorrect Key!");
+          expect(msg).toBe("Missing Input!");
         });
     });
     test("status: 400 rejects the posting of an article if there are extra keys", () => {

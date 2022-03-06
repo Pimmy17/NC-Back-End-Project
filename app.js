@@ -39,8 +39,6 @@ app.post("/api/topics", addTopic);
 app.post("/api/articles", addArticle);
 
 //Error Handling Section
-
-//Bad Pathway
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Incorrect Pathway =/" });
   next(err);

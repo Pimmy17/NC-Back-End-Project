@@ -35,10 +35,10 @@ $ code .
 
 2. **Install Dependencies:**
 
-After cloning, you will need to install the dependencies in your terminal to allow tests to be run.
+After cloning, you will need to install the dependencies in your terminal to allow tests to be run by running.
 
 ```
-- $ npm i -D
+- $ npm install
 And an addition extension:
 - $ npm install --save-dev jest-sorted
 ```
