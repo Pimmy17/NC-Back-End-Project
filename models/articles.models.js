@@ -157,9 +157,23 @@ exports.addCommentVotes = (comment_id, newVote) => {
     });
 };
 
-exports.postArticle = (article) => {
-  const { author, title, body, topic } = article;
-  if (
+exports.postArticle = (newArticle) => {
+  const articleKeys = Object.keys(newArticle);
+  const { author, title, body, topic } = newArticle;
+  if (Object.keys(newArticle).length > 4) {
+    return Promise.reject({ status: 400, msg: "Additional Key Entered!" });
+  } else if (Object.keys(newArticle).length < 4) {
+    return Promise.reject({ status: 400, msg: "Missing Keys!" });
+  } else if (
+    !(
+      articleKeys[0] === "author" &&
+      articleKeys[1] === "title" &&
+      articleKeys[2] === "body" &&
+      articleKeys[3] === "topic"
+    )
+  ) {
+    return Promise.reject({ status: 400, msg: "Incorrect Key!" });
+  } else if (
     author.length === 0 ||
     title.length === 0 ||
     body.length === 0 ||

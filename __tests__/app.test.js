@@ -3,6 +3,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
+const { expect } = require("@jest/globals");
 
 afterAll(() => db.end());
 beforeEach(() => seed(data));
@@ -696,6 +697,95 @@ describe("POST - Comments", () => {
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Incorrect Input!");
+        });
+    });
+    test("should return a status error of 400 if invalid info is entered", () => {
+      const yetAnotherBadArticle = {
+        author: "rogersop",
+        title: "The Life and Times of the Yeti",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: 2,
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(yetAnotherBadArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Input!");
+        });
+    });
+    test("status: 400 rejects the posting of an article if a key is spelt wrong", () => {
+      newArticle = {
+        athor: "rogersop",
+        title: "The Life and Times of the Yeti",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: "paper",
+      };
+      return request(app)
+        .post(`/api/articles`)
+        .send(newArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Incorrect Key!");
+        });
+    });
+    test("status: 400 rejects the posting of an article if there are extra keys", () => {
+      newArticle = {
+        author: "rogersop",
+        title: "The Life and Times of the Yeti",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: "paper",
+        comments: "But the yellow ones are the best!",
+      };
+      return request(app)
+        .post(`/api/articles`)
+        .send(newArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Additional Key Entered!");
+        });
+    });
+    test("status: 400 rejects the posting of an article if the relevent keys are not passed in", () => {
+      newArticle = {
+        author: "rogersop",
+        body: "A cautionary tale of a Yeti and yellow snowcones",
+        topic: "paper",
+      };
+      return request(app)
+        .post(`/api/articles`)
+        .send(newArticle)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing Keys!");
+        });
+    });
+  });
+  describe("GET - API", () => {
+    test("should return a status 200 and all the valid endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.endpoints).toEqual(
+            expect.objectContaining({
+              "GET /api": expect.any(Object),
+              "GET /api/topics": expect.any(Object),
+              "GET /api/articles": expect.any(Object),
+              "GET /api/comments": expect.any(Object),
+              "GET /api/users": expect.any(Object),
+              "GET /api/articles/:article_id": expect.any(Object),
+              "GET /api/articles/:article_id/comments": expect.any(Object),
+              "GET /api/users/:username": expect.any(Object),
+              "DELETE /api/articles/:article_id/:comment_id":
+                expect.any(Object),
+              "DELETE /api/articles/:article_id": expect.any(Object),
+              "PATCH /api/articles/:article_id": expect.any(Object),
+              "PATCH /api/articles/:article_id/:comment_id": expect.any(Object),
+              "POST /api/articles/:article_id/comments": expect.any(Object),
+              "POST /api/topics": expect.any(Object),
+              "POST /api/articles": expect.any(Object),
+            })
+          );
         });
     });
   });

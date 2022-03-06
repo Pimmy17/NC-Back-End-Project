@@ -15,10 +15,12 @@ const {
   updateCommentVotes,
   addArticle,
 } = require("./controllers/articles.controllers");
+const { getEndpoints } = require("./controllers/endpoints.controllers");
 
 const app = express();
 app.use(express.json());
 //Gets
+app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);
