@@ -16,7 +16,9 @@ const {
   addArticle,
 } = require("./controllers/articles.controllers");
 const { getEndpoints } = require("./controllers/endpoints.controllers");
+const cors = require("cors");
 
+app.use(cors());
 const app = express();
 app.use(express.json());
 //Gets
