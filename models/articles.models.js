@@ -28,6 +28,9 @@ exports.fetchArticles = (sort_by = "created_at", order_by = "DESC", topic) => {
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by};`;
   return db.query(queryStr, queryValues).then(({ rows: articles }) => {
+    if (articles.length === 0) {
+      return Promise.reject({ status: 404, msg: "Invalid Search!" });
+    }
     return articles;
   });
 };
